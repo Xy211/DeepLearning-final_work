@@ -1,14 +1,12 @@
 """
-本地网页版车牌识别演示，基于训练好的 CCPD 模型。
+本地网页版车牌检测+识别演示，支持三种检测方案：
+- simple：轮廓法（默认，无需额外权重）
+- enhanced：Sobel+形态学，召回更高
+- yolo：使用 YOLO 权重进行车牌检测（需提供 --det_weights）
 
-功能：
-- 使用简单轮廓法做车牌区域检测（无需额外权重）。
-- 使用 `train_ccpd.py` 中的 PlateNet 进行字符识别。
-- 支持在浏览器上传图片，返回标注结果。
-
-启动示例：
-python web_app.py --weights ccpd_recognition.pth --device cpu
-python web_app.py --weights ccpd_recognition.pth --device cuda:0 --port 8000
+识别使用 train_ccpd.py 训练的 PlateNet，上传图片即可返回标注结果。
+示例：
+python web_app.py --weights ccpd_recognition_new.pth --device cuda:0 --port 8000 --detector yolo --det_weights runs/detect/train*/weights/best.pt
 """
 
 from __future__ import annotations
@@ -250,7 +248,7 @@ def parse_args():
         "--detector",
         choices=["simple", "enhanced", "yolo"],
         default="simple",
-        help="车牌检测方式：simple/增强/YOLO",
+        help="车牌检测方式：simple/增强/YOLO（推荐 yolo，需提供 --det_weights）",
     )
     parser.add_argument("--det_weights", default=None, help="YOLO 车牌检测权重路径（detector=yolo 时必填）")
     parser.add_argument("--det_device", default=None, help="YOLO 推理设备，默认与 --device 一致")
@@ -259,6 +257,9 @@ def parse_args():
 
 def main():
     args = parse_args()
+    # 如果提供了 YOLO 权重而未显式指定检测器，自动切换到 yolo
+    if args.det_weights and args.detector != "yolo":
+        args.detector = "yolo"
     device = torch.device(args.device if torch.cuda.is_available() or args.device == "cpu" else "cpu")
     model = load_model(args.weights, device=device)
     det_model = None

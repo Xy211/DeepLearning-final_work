@@ -7,10 +7,7 @@
 - `train_ccpd.py`：车牌识别模型训练脚本（PlateNet，多头 ResNet18）。
 - `prepare_ccpd_yolo.py`：将 CCPD 标签转换为 YOLO 检测训练格式。
 - `web_app.py`：本地网页演示（上传图片，显示检测框与识别结果）。
-- `ccpd_yolo/`：YOLO 训练所需的 images/labels 与 `dataset.yaml`。
-- `runs/`：YOLO 训练输出（曲线、可视化、权重）。
-- `ccpd_recognition_new.pth`：识别模型权重（示例）。
-- `课程测试报告.md` / `课程测试报告.docx`：课程测试报告（含可视化与截图）。
+- `课程测试报告.docx`：课程测试报告（含可视化与截图）。
 
 ## 环境依赖
 
@@ -25,7 +22,7 @@
 
 ## 车牌识别训练（`train_ccpd.py`）
 
-- 在 CCPD2020 的 `ccpd_green` 划分上训练多头 ResNet18 分类器（支持 7/8 位新能源车牌），从文件名解析标签与车牌框，裁剪后逐位交叉熵训练。
+- 在 CCPD2020 的 `ccpd_green` 划分上训练多头 ResNet18 分类器（支持 8 位新能源车牌），从文件名解析标签与车牌框，裁剪后逐位交叉熵训练。
 - CPU 调试示例：`python train_ccpd.py --data_root CCPD2020/CCPD2020/ccpd_green --epochs 1 --limit_train 200 --limit_val 50 --device cpu`
 - GPU 全量示例：`python train_ccpd.py --data_root CCPD2020/CCPD2020/ccpd_green --epochs 15 --batch_size 128 --device cuda:0`
 - 最优模型自动保存到 `ccpd_recognition.pth`（可用 `--save_path` 指定）。
@@ -51,6 +48,3 @@
 
 - Word：`课程测试报告.docx`（含系统截图与可视化）
 
-## 注意事项
-
-- YOLO 训练结果与可视化在 `runs/` 目录中。

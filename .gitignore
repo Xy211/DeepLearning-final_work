@@ -1,4 +1,7 @@
 CCPD2020/
 __pycache__/
+ccpd_yolo/
+runs/
 *.pth
+*.pt
 *.zip
